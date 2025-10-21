@@ -1,0 +1,29 @@
+package com.jpmc.midascore.component;
+
+import com.jpmc.midascore.foundation.Transaction;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.kafka.annotation.KafkaListener;
+import org.springframework.stereotype.Component;
+
+@Component
+public class TransactionListener {
+    
+    private static final Logger logger = LoggerFactory.getLogger(TransactionListener.class);
+    private int transactionCount = 0;
+    
+    @KafkaListener(topics = "${general.kafka-topic}", groupId = "${spring.kafka.consumer.group-id}")
+    public void receiveTransaction(Transaction transaction) {
+        
+        transactionCount++;
+        
+       // logger.info("Received transaction: {}", transaction);
+        
+       
+        if (transactionCount <= 4) {
+            logger.info("========================================");
+            logger.info("TRANSACTION #{}: AMOUNT = {}", transactionCount, transaction.getAmount());
+            logger.info("========================================");
+        }
+    }
+}
