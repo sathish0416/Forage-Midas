@@ -13,8 +13,8 @@ import org.springframework.test.annotation.DirtiesContext;
 @SpringBootTest
 @DirtiesContext
 @EmbeddedKafka(partitions = 1, brokerProperties = {"listeners=PLAINTEXT://localhost:9092", "port=9092"})
-public class TaskFourTests {
-    static final Logger logger = LoggerFactory.getLogger(TaskFourTests.class);
+public class TaskFourQuickTest {
+    static final Logger logger = LoggerFactory.getLogger(TaskFourQuickTest.class);
 
     @Autowired
     private KafkaProducer kafkaProducer;
@@ -29,30 +29,33 @@ public class TaskFourTests {
     private DatabaseConduit databaseConduit;
 
     @Test
-    void task_four_verifier() throws InterruptedException {
+    void find_wilbur_balance() throws InterruptedException {
+        // Populate users
         userPopulator.populate();
+        
+        // Send all transactions
         String[] transactionLines = fileLoader.loadStrings("/test_data/alskdjfh.fhdjsk");
         for (String transactionLine : transactionLines) {
             kafkaProducer.send(transactionLine);
         }
-        Thread.sleep(2000);
+        
+        // Wait for processing (give extra time for API calls)
+        Thread.sleep(3000);
 
         // Query wilbur's balance
         UserRecord wilbur = databaseConduit.findUserByName("wilbur");
 
-        logger.info("----------------------------------------------------------");
-        logger.info("----------------------------------------------------------");
-        logger.info("----------------------------------------------------------");
+        // Print the answer
+        System.out.println("=".repeat(80));
+        System.out.println("=".repeat(80));
+        System.out.println("WILBUR'S BALANCE: " + wilbur.getBalance());
+        System.out.println("WILBUR'S BALANCE (ROUNDED DOWN): " + (int) wilbur.getBalance());
+        System.out.println("=".repeat(80));
+        System.out.println("=".repeat(80));
+        
+        logger.info("=".repeat(80));
         logger.info("WILBUR'S BALANCE: {}", wilbur.getBalance());
         logger.info("WILBUR'S BALANCE (ROUNDED DOWN): {}", (int) wilbur.getBalance());
-        logger.info("----------------------------------------------------------");
-        logger.info("----------------------------------------------------------");
-        logger.info("----------------------------------------------------------");
-        logger.info("use your debugger to find out what wilbur's balance is after all transactions are processed");
-        logger.info("kill this test once you find the answer");
-        while (true) {
-            Thread.sleep(20000);
-            logger.info("...");
-        }
+        logger.info("=".repeat(80));
     }
 }
