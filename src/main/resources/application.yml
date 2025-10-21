@@ -2,6 +2,9 @@
 general:
   kafka-topic: transactions
 
+server:
+  port: 33400
+
 spring:
   application:
     name: midas-core
