@@ -1,0 +1,40 @@
+# Midas Core Application Configuration
+general:
+  kafka-topic: transactions
+
+spring:
+  application:
+    name: midas-core
+  
+  # H2 Database Configuration
+  datasource:
+    url: jdbc:h2:mem:testdb
+    driver-class-name: org.h2.Driver
+    username: sa
+    password:
+  
+  # JPA Configuration
+  jpa:
+    database-platform: org.hibernate.dialect.H2Dialect
+    hibernate:
+      ddl-auto: create-drop
+    show-sql: false
+  
+  # H2 Console (optional, for debugging)
+  h2:
+    console:
+      enabled: false
+  
+  # Kafka Configuration (will be configured in later tasks)
+  kafka:
+    bootstrap-servers: localhost:9092
+    consumer:
+      group-id: midas-core
+      auto-offset-reset: earliest
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
+      properties:
+        spring.json.trusted.packages: "*"
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
